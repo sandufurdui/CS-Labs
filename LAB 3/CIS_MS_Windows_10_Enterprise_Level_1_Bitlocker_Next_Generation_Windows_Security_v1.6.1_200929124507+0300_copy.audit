@@ -1,0 +1,151 @@
+<Custom item>
+Impact:If the Maximum password age setting is too low, users are required to change their passwords very often. Such a configuration can reduce security in the organization, because users might write their passwords in an insecure location or lose them. If the value for this policy setting is too high, the level of security within an organization is reduced because it allows potential attackers more time in which to discover user passwords or to use compromised accounts.
+  info : "This policy setting defines how long a user can use their password before it expires.Values for this policy setting range from 0 to 999 days. If you set the value to 0, the password will never expire.Because attackers can crack passwords, the more frequently you change the password the less opportunity an attacker has to use a cracked password. However, the lower this value is set, the higher the potential for an increase in calls to help desk support due to users having to change their password or forgetting which password is current.The recommended state for this setting is 60 or fewer days, but not 0.
+ Default Value:42 days."
+  check_type : CHECK_REGEX
+  solution : "To establish the recommended configuration via GP, set the following UI path to 60 or fewer days, but not 0:Computer Configuration\Policies\Windows Settings\Security Settings\Account Policies\Password Policy\Maximum password age
+  value_type : TIME_DAY
+ The recommended state for this setting is: 24 or more password(s).
+  see_also : "https://workbench.cisecurity.org/files/2550"
+  value_data : [1..60]
+  reg_key : "HKLM\Software\Microsoft\Windows Nt\Currentversion"
+  reference : "800-53|IA-5(1),CCE|CCE-34907-6,CIP|007-6-R5,CN-L3|7.1.2.7(e),CN-L3|7.1.3.1(b),CSCv6|16.5,CSF|PR.AC-1,HIPAA|164.308(a)(5)(ii)(D),ISO/IEC-27001|A.9.4.3,ITSG-33|IA-5(1),LEVEL|1S,NESA|T5.2.3,NIAv2|AM20,NIAv2|AM21,PCI-DSSv3.1|8.2.4,PCI-DSSv3.2|8.2.4,SWIFT-CSCv1|4.1,TBA-FIISB|26.2.2"
+  reg_item : "ReleaseId"
+ Rationale:The longer a password exists the higher the likelihood that it will be compromised by a brute force attack, by an attacker gaining general knowledge about the user, or by the user sharing the password. Configuring the Maximum password age setting to 0 so that users are never required to change their passwords is a major security risk because that allows a compromised password to be used by the malicious user for as long as the valid user has authorized access."
+  password_policy : MAXIMUM_PASSWORD_AGE
+ type : PASSWORD_POLICY
+  description : "1.1.2 Ensure 'Maximum password age' is set to '60 or fewer days, but not 0'"
+</Custom item>
+
+<Custom item>
+Impact:If the default password complexity configuration is retained, additional help desk calls for locked-out accounts could occur because users might not be accustomed to passwords that contain non-alphabetic characters. However, all users should be able to comply with the complexity requirement with minimal difficulty.If your organization has more stringent security requirements, you can create a custom version of the Passfilt.dll file that allows the use of arbitrarily complex password strength rules. For example, a custom password filter might require the use of non-upper row characters. (Upper row characters are those that require you to hold down the SHIFT key and press any of the digits between 1 and 0.) A custom password filter might also perform a dictionary check to verify that the proposed password does not contain common dictionary words or fragments.Also, the use of ALT key character combinations can greatly enhance the complexity of a password. However, such stringent password requirements can result in unhappy users and an extremely busy help desk. Alternatively, your organization could consider a requirement for all administrator passwords to use ALT characters in the 0128 - 0159 range. (ALT characters outside of this range can represent standard alphanumeric characters that would not add additional complexity to the password.)
+ Contain characters from three of the following categories:English uppercase characters (A through Z)English lowercase characters (a through z)Base 10 digits (0 through 9)Non-alphabetic characters (for example, !, $, #, %)A catch-all category of any Unicode character that does not fall under the previous four categories. This fifth category can be regionally specific.Each additional character in a password increases its complexity exponentially. For instance, a seven-character, all lower-case alphabetic password would have 267 (approximately 8 x 109 or 8 billion) possible combinations. At 1,000,000 attempts per second (a capability of many password-cracking utilities), it would only take 133 minutes to crack. A seven-character alphabetic password with case sensitivity has 527 combinations. A seven-character case-sensitive alphanumeric password without punctuation has 627 combinations. An eight-character password has 268 (or 2 x 1011) possible combinations. Although this might seem to be a large number, at 1,000,000 attempts per second it would take only 59 hours to try all possible passwords. Remember, these times will significantly increase for passwords that use ALT characters and other special keyboard characters such as '!' or '@'. Proper use of the password settings can help make it difficult to mount a brute force attack.
+  info : "This policy setting checks all new passwords to ensure that they meet basic requirements for strong passwords.
+ Default Value:Enabled on domain members. Disabled on stand-alone workstations."
+  check_type : CHECK_REGEX
+  solution : "To establish the recommended configuration via GP, set the following UI path to Enabled:Computer Configuration\Policies\Windows Settings\Security Settings\Account Policies\Password Policy\Password must meet complexity requirements
+  value_type : POLICY_SET
+ The recommended state for this setting is: Enabled.
+  see_also : "https://workbench.cisecurity.org/files/2550"
+  value_data : "Enabled"
+  reg_key : "HKLM\Software\Microsoft\Windows Nt\Currentversion"
+  reference : "800-171|3.5.7,800-53|IA-5(1),CCE|CCE-33777-4,CIP|007-6-R5,CN-L3|7.1.2.7(e),CN-L3|7.1.3.1(b),CSF|PR.AC-1,HIPAA|164.308(a)(5)(ii)(D),ISO/IEC-27001|A.9.4.3,ITSG-33|IA-5(1),LEVEL|1S,NESA|T5.2.3,NIAv2|AM19a,NIAv2|AM19b,NIAv2|AM19c,NIAv2|AM19d,NIAv2|AM22a,PCI-DSSv3.1|8.2.3,PCI-DSSv3.2|8.2.3,SWIFT-CSCv1|4.1,TBA-FIISB|26.2.1,TBA-FIISB|26.2.4"
+ Note: Older versions of Windows such as Windows 98 and Windows NT 4.0 do not support passwords that are longer than 14 characters. Computers that run these older operating systems are unable to authenticate with computers or domains that use accounts that require long passwords.
+  reg_item : "ReleaseId"
+ Rationale:Passwords that contain only alphanumeric characters are extremely easy to discover with several publicly available tools."
+  password_policy : COMPLEXITY_REQUIREMENTS
+ type : PASSWORD_POLICY
+  description : "1.1.5 Ensure 'Password must meet complexity requirements' is set to 'Enabled'"
+ When this policy is enabled, passwords must meet the following minimum requirements:Not contain the user's account name or parts of the user's full name that exceed two consecutive charactersBe at least six characters in length
+</Custom item>
+
+<Custom item>
+Impact:If you do not configure this policy setting or if the value is configured to an interval that is too long, a DoS attack could occur. An attacker could maliciously attempt to log on to each user's account numerous times and lock out their accounts as described in the preceding paragraphs. If you do not configure the Reset account lockout counter after setting, administrators would have to manually unlock all accounts. If you configure this policy setting to a reasonable value the users would be locked out for some period, after which their accounts would unlock automatically. Be sure that you notify users of the values used for this policy setting so that they will wait for the lockout timer to expire before they call the help desk about their inability to log on.
+ Contain characters from three of the following categories:English uppercase characters (A through Z)English lowercase characters (a through z)Base 10 digits (0 through 9)Non-alphabetic characters (for example, !, $, #, %)A catch-all category of any Unicode character that does not fall under the previous four categories. This fifth category can be regionally specific.Each additional character in a password increases its complexity exponentially. For instance, a seven-character, all lower-case alphabetic password would have 267 (approximately 8 x 109 or 8 billion) possible combinations. At 1,000,000 attempts per second (a capability of many password-cracking utilities), it would only take 133 minutes to crack. A seven-character alphabetic password with case sensitivity has 527 combinations. A seven-character case-sensitive alphanumeric password without punctuation has 627 combinations. An eight-character password has 268 (or 2 x 1011) possible combinations. Although this might seem to be a large number, at 1,000,000 attempts per second it would take only 59 hours to try all possible passwords. Remember, these times will significantly increase for passwords that use ALT characters and other special keyboard characters such as '!' or '@'. Proper use of the password settings can help make it difficult to mount a brute force attack.
+  info : "This policy setting determines the length of time before the Account lockout threshold resets to zero. The default value for this policy setting is Not Defined. If the Account lockout threshold is defined, this reset time must be less than or equal to the value for the Account lockout duration setting.If you leave this policy setting at its default value or configure the value to an interval that is too long, your environment could be vulnerable to a DoS attack. An attacker could maliciously perform a number of failed logon attempts on all users in the organization, which will lock out their accounts. If no policy were determined to reset the account lockout, it would be a manual task for administrators. Conversely, if a reasonable time value is configured for this policy setting, users would be locked out for a set period until all of the accounts are unlocked automatically.
+ Default Value:None, because this policy setting only has meaning when an Account lockout threshold is specified. When an Account lockout threshold is configured, Windows automatically suggests a value of 30 minutes."
+  lockout_policy : LOCKOUT_RESET
+  check_type : CHECK_REGEX
+  solution : "To establish the recommended configuration via GP, set the following UI path to 15 or more minute(s):Computer Configuration\Policies\Windows Settings\Security Settings\Account Policies\Account Lockout Policy\Reset account lockout counter after
+  value_type : TIME_MINUTE
+ The recommended state for this setting is: 15 or more minute(s).
+  see_also : "https://workbench.cisecurity.org/files/2550"
+  value_data : [15..MAX]
+  reg_key : "HKLM\Software\Microsoft\Windows Nt\Currentversion"
+  reference : "800-171|3.1.8,800-53|AC-7,CCE|CCE-35408-4,CN-L3|8.1.4.1(b),CSCv6|16,CSCv6|16.7,CSCv7|16.11,ITSG-33|AC-7,LEVEL|1S,NESA|T5.5.1,NIAv2|AM24,TBA-FIISB|36.2.4,TBA-FIISB|45.1.2,TBA-FIISB|45.2.1,TBA-FIISB|45.2.2"
+ Note: Older versions of Windows such as Windows 98 and Windows NT 4.0 do not support passwords that are longer than 14 characters. Computers that run these older operating systems are unable to authenticate with computers or domains that use accounts that require long passwords.
+  reg_item : "ReleaseId"
+ Rationale:Users can accidentally lock themselves out of their accounts if they mistype their password multiple times. To reduce the chance of such accidental lockouts, the Reset account lockout counter after setting determines the number of minutes that must elapse before the counter that tracks failed logon attempts and triggers lockouts is reset to 0."
+  password_policy : REVERSIBLE_ENCRYPTION
+ type : LOCKOUT_POLICY
+  description : "1.2.3 Ensure 'Reset account lockout counter after' is set to '15 or more minute(s)'"
+ When this policy is enabled, passwords must meet the following minimum requirements:Not contain the user's account name or parts of the user's full name that exceed two consecutive charactersBe at least six characters in length
+</Custom item>
+
+<Custom item>
+Impact:None - this is the default behavior.
+ Contain characters from three of the following categories:English uppercase characters (A through Z)English lowercase characters (a through z)Base 10 digits (0 through 9)Non-alphabetic characters (for example, !, $, #, %)A catch-all category of any Unicode character that does not fall under the previous four categories. This fifth category can be regionally specific.Each additional character in a password increases its complexity exponentially. For instance, a seven-character, all lower-case alphabetic password would have 267 (approximately 8 x 109 or 8 billion) possible combinations. At 1,000,000 attempts per second (a capability of many password-cracking utilities), it would only take 133 minutes to crack. A seven-character alphabetic password with case sensitivity has 527 combinations. A seven-character case-sensitive alphanumeric password without punctuation has 627 combinations. An eight-character password has 268 (or 2 x 1011) possible combinations. Although this might seem to be a large number, at 1,000,000 attempts per second it would take only 59 hours to try all possible passwords. Remember, these times will significantly increase for passwords that use ALT characters and other special keyboard characters such as '!' or '@'. Proper use of the password settings can help make it difficult to mount a brute force attack.
+  info : "This setting determines which users can change the time zone of the computer. This ability holds no great danger for the computer and may be useful for mobile workers.
+ Default Value:Administrators, LOCAL SERVICE, Users."
+  lockout_policy : LOCKOUT_RESET
+  check_type : CHECK_REGEX
+  solution : "To establish the recommended configuration via GP, set the following UI path to Administrators, LOCAL SERVICE, Users:Computer Configuration\Policies\Windows Settings\Security Settings\Local Policies\User Rights Assignment\Change the time zone
+ The risk from these types of events is mitigated on most Domain Controllers, Member Servers, and end-user computers because the Windows Time service automatically synchronizes time with Domain Controllers in the following ways:All client desktop computers and Member Servers use the authenticating Domain Controller as their inbound time partner.All Domain Controllers in a domain nominate the Primary Domain Controller (PDC) Emulator operations master as their inbound time partner.All PDC Emulator operations masters follow the hierarchy of domains in the selection of their inbound time partner.The PDC Emulator operations master at the root of the domain is authoritative for the organization. Therefore it is recommended that you configure this computer to synchronize with a reliable external time server.This vulnerability becomes much more serious if an attacker is able to change the system time and then stop the Windows Time service or reconfigure it to synchronize with a time server that is not accurate."
+  value_type : USER_RIGHT
+ The recommended state for this setting is: Administrators, LOCAL SERVICE, Users.
+  see_also : "https://workbench.cisecurity.org/files/2550"
+  value_data : "Administrators" && "LOCAL SERVICE" && "Users"
+  reg_key : "HKLM\Software\Microsoft\Windows Nt\Currentversion"
+  reference : "800-53|AC-6(7),CCE|CCE-33431-8,CSCv6|5.1,CSF|PR.AC-4,ISO/IEC-27001|A.9.2.5,LEVEL|1S,NESA|M1.1.3,NESA|T5.1.1"
+ Note: Discrepancies between the time on the local computer and on the Domain Controllers in your environment may cause problems for the Kerberos authentication protocol, which could make it impossible for users to log on to the domain or obtain authorization to access domain resources after they are logged on. Also, problems will occur when Group Policy is applied to client computers if the system time is not synchronized with the Domain Controllers.
+  reg_item : "ReleaseId"
+  right_type : SeTimeZonePrivilege
+ Rationale:Changing the time zone represents little vulnerability because the system time is not affected. This setting merely enables users to display their preferred time zone while being synchronized with Domain Controllers in different time zones."
+  password_policy : REVERSIBLE_ENCRYPTION
+ Note #2: In all versions of Windows prior to Windows 7, Remote Desktop Services was known as Terminal Services, so you should substitute the older term if comparing against an older OS.
+ type : USER_RIGHTS_POLICY
+  description : "2.2.9 Ensure 'Change the time zone' is set to 'Administrators, LOCAL SERVICE, Users'"
+ When this policy is enabled, passwords must meet the following minimum requirements:Not contain the user's account name or parts of the user's full name that exceed two consecutive charactersBe at least six characters in length
+</Custom item>
+
+<Custom item>
+ info : "This policy setting allows users to shut down Windows Vista-based and newer computers from remote locations on the network. Anyone who has been assigned this user right can cause a denial of service (DoS) condition, which would make the computer unavailable to service user requests. Therefore, it is recommended that only highly trusted administrators be assigned this user right.
+ Important: If you apply this security policy to the Everyone group, no one will be able to log on locally.
+  check_type : CHECK_REGEX
+  solution : "To establish the recommended configuration via GP, set the following UI path to Administrators:Computer Configuration\Policies\Windows Settings\Security Settings\Local Policies\User Rights Assignment\Force shutdown from a remote system
+  see_also : "https://workbench.cisecurity.org/files/2550"
+  value_data : "Administrators"
+  reg_key : "HKLM\Software\Microsoft\Windows Nt\Currentversion"
+  reg_item : "ReleaseId"
+  right_type : SeRemoteShutdownPrivilege
+ Rationale:Any user who can shut down a computer could cause a DoS condition to occur. Therefore, this user right should be tightly restricted."
+  password_policy : REVERSIBLE_ENCRYPTION
+ Note #2: In all versions of Windows prior to Windows 7, Remote Desktop Services was known as Terminal Services, so you should substitute the older term if comparing against an older OS.
+  description : "2.2.22 Ensure 'Force shutdown from a remote system' is set to 'Administrators'"
+ Impact:If you remove the Force shutdown from a remote system user right from the Server Operator group you could limit the abilities of users who are assigned to specific administrative roles in your environment. You should confirm that delegated activities will not be adversely affected.
+ Contain characters from three of the following categories:English uppercase characters (A through Z)English lowercase characters (a through z)Base 10 digits (0 through 9)Non-alphabetic characters (for example, !, $, #, %)A catch-all category of any Unicode character that does not fall under the previous four categories. This fifth category can be regionally specific.Each additional character in a password increases its complexity exponentially. For instance, a seven-character, all lower-case alphabetic password would have 267 (approximately 8 x 109 or 8 billion) possible combinations. At 1,000,000 attempts per second (a capability of many password-cracking utilities), it would only take 133 minutes to crack. A seven-character alphabetic password with case sensitivity has 527 combinations. A seven-character case-sensitive alphanumeric password without punctuation has 627 combinations. An eight-character password has 268 (or 2 x 1011) possible combinations. Although this might seem to be a large number, at 1,000,000 attempts per second it would take only 59 hours to try all possible passwords. Remember, these times will significantly increase for passwords that use ALT characters and other special keyboard characters such as '!' or '@'. Proper use of the password settings can help make it difficult to mount a brute force attack.
+ Caution: Configuring a standalone (non-domain-joined) workstation as described above may result in an inability to remotely administer the workstation.
+ Default Value:Administrators."
+  lockout_policy : LOCKOUT_RESET
+ The risk from these types of events is mitigated on most Domain Controllers, Member Servers, and end-user computers because the Windows Time service automatically synchronizes time with Domain Controllers in the following ways:All client desktop computers and Member Servers use the authenticating Domain Controller as their inbound time partner.All Domain Controllers in a domain nominate the Primary Domain Controller (PDC) Emulator operations master as their inbound time partner.All PDC Emulator operations masters follow the hierarchy of domains in the selection of their inbound time partner.The PDC Emulator operations master at the root of the domain is authoritative for the organization. Therefore it is recommended that you configure this computer to synchronize with a reliable external time server.This vulnerability becomes much more serious if an attacker is able to change the system time and then stop the Windows Time service or reconfigure it to synchronize with a time server that is not accurate."
+  value_type : USER_RIGHT
+ The recommended state for this setting is: Administrators.
+  reference : "800-53|AC-6(7),CCE|CCE-33715-4,CSCv6|5.1,CSF|PR.AC-4,ISO/IEC-27001|A.9.2.5,LEVEL|1S,NESA|M1.1.3,NESA|T5.1.1"
+ Note: This user right is considered a 'sensitive privilege' for the purposes of auditing.
+ The recommended state for this setting is to include: Guests, Local account.
+ type : USER_RIGHTS_POLICY
+ When this policy is enabled, passwords must meet the following minimum requirements:Not contain the user's account name or parts of the user's full name that exceed two consecutive charactersBe at least six characters in length
+</Custom item>
+
+<Custom item>
+Also, a user can impersonate an access token if any of the following conditions exist:The access token that is being impersonated is for this user.The user, in this logon session, logged on to the network with explicit credentials to create the access token.The requested level is less than Impersonate, such as Anonymous or Identify.An attacker with the Impersonate a client after authentication user right could create a service, trick a client to make them connect to the service, and then impersonate that client to elevate the attacker's level of access to that of the client.
+  info : "This policy setting determines which users can change the auditing options for files and directories and clear the Security log.
+ Important: If you apply this security policy to the Everyone group, no one will be able to log on locally.
+  check_type : CHECK_REGEX
+  solution : "To establish the recommended configuration via GP, set the following UI path to Administrators:Computer Configuration\Policies\Windows Settings\Security Settings\Local Policies\User Rights Assignment\Manage auditing and security log
+ On Windows 10 R1703 or newer: Administrators, Window Manager\Window Manager Group."
+  see_also : "https://workbench.cisecurity.org/files/2550"
+  value_data : "Administrators"
+  reg_key : "HKLM\Software\Microsoft\Windows Nt\Currentversion"
+  reg_item : "ReleaseId"
+  right_type : SeSecurityPrivilege
+ Rationale:The ability to manage the Security event log is a powerful user right and it should be closely guarded. Anyone with this user right can clear the Security log to erase important evidence of unauthorized activity."
+  password_policy : REVERSIBLE_ENCRYPTION
+ Note #2: In all versions of Windows prior to Windows 7, Remote Desktop Services was known as Terminal Services, so you should substitute the older term if comparing against an older OS.
+  description : "2.2.30 Ensure 'Manage auditing and security log' is set to 'Administrators'"
+ Impact:None - this is the default behavior.
+ Contain characters from three of the following categories:English uppercase characters (A through Z)English lowercase characters (a through z)Base 10 digits (0 through 9)Non-alphabetic characters (for example, !, $, #, %)A catch-all category of any Unicode character that does not fall under the previous four categories. This fifth category can be regionally specific.Each additional character in a password increases its complexity exponentially. For instance, a seven-character, all lower-case alphabetic password would have 267 (approximately 8 x 109 or 8 billion) possible combinations. At 1,000,000 attempts per second (a capability of many password-cracking utilities), it would only take 133 minutes to crack. A seven-character alphabetic password with case sensitivity has 527 combinations. A seven-character case-sensitive alphanumeric password without punctuation has 627 combinations. An eight-character password has 268 (or 2 x 1011) possible combinations. Although this might seem to be a large number, at 1,000,000 attempts per second it would take only 59 hours to try all possible passwords. Remember, these times will significantly increase for passwords that use ALT characters and other special keyboard characters such as '!' or '@'. Proper use of the password settings can help make it difficult to mount a brute force attack.
+ Caution: Configuring a standalone (non-domain-joined) workstation as described above may result in an inability to remotely administer the workstation.
+ Default Value:Administrators."
+ On Windows 10 R1607 or older: Administrators.
+  lockout_policy : LOCKOUT_RESET
+ The risk from these types of events is mitigated on most Domain Controllers, Member Servers, and end-user computers because the Windows Time service automatically synchronizes time with Domain Controllers in the following ways:All client desktop computers and Member Servers use the authenticating Domain Controller as their inbound time partner.All Domain Controllers in a domain nominate the Primary Domain Controller (PDC) Emulator operations master as their inbound time partner.All PDC Emulator operations masters follow the hierarchy of domains in the selection of their inbound time partner.The PDC Emulator operations master at the root of the domain is authoritative for the organization. Therefore it is recommended that you configure this computer to synchronize with a reliable external time server.This vulnerability becomes much more serious if an attacker is able to change the system time and then stop the Windows Time service or reconfigure it to synchronize with a time server that is not accurate."
+  value_type : USER_RIGHT
+ The recommended state for this setting is: Administrators.
+  reference : "800-53|AC-6(7),CCE|CCE-35275-7,CSCv6|5.1,CSF|PR.AC-4,ISO/IEC-27001|A.9.2.5,LEVEL|1S,NESA|M1.1.3,NESA|T5.1.1"
+ Note: This user right is considered a 'sensitive privilege' for the purposes of auditing.
+ The recommended state for this setting is to include: Guests, Local account.
+ type : USER_RIGHTS_POLICY
+ When this policy is enabled, passwords must meet the following minimum requirements:Not contain the user's account name or parts of the user's full name that exceed two consecutive charactersBe at least six characters in length
+</Custom item>
+

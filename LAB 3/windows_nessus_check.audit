@@ -1,0 +1,193 @@
+#
+# This script is Copyright (C) 2004-2020 and is owned by Tenable, Inc. or an Affiliate thereof.
+#
+# This script is released under the Tenable Subscription License and
+# may not be used from within scripts released under another license
+# without authorization from Tenable, Inc.
+#
+# See the following licenses for details:
+#
+# http://static.tenable.com/prod_docs/Nessus_6_SLA_and_Subscription_Agreement.pdf
+#
+# @PROFESSIONALFEED@
+# $Revision: 1.2 $
+# $Date: 2020/07/14 $
+#
+# Description : This document implements the security configuration as recommended by the
+#               CIS Google Chrome Benchmark v2.0.0
+#
+# Ref         : https://workbench.cisecurity.org/files/2385
+#
+#<ui_metadata>
+#<display_name>CIS Google Chrome L1 v2.0.0</display_name>
+#<spec>
+#  <type>CIS</type>
+#  <name>CIS Google Chrome L1</name>
+#  <version>2.0.0</version>
+#  <link>https://workbench.cisecurity.org/files/2385</link>
+#</spec>
+#<labels>cis,google,chrome,windows</labels>
+#<benchmark_refs>LEVEL,CSCv6,CSCv7</benchmark_refs>
+#</ui_metadata>
+
+<check_type:"Windows" version:"2">
+<group_policy:"Google Chrome">
+
+
+
+    <custom_item>
+      type        : REGISTRY_SETTING
+      description : "1.1.1 Ensure 'Enable curtaining of remote access hosts' is set to 'Disabled'"
+      info        : "Chrome allows the user to disable a remote user's physical input and output while the remote connection is in progress."
+      solution    : "To establish the recommended configuration via Group Policy, set the following UI path to 'Disabled'.
+  Impact : If this setting is disabled, host's physical input and output devices are enabled while a remote connection is in progress."
+      reference   : "800-171|3.4.2,800-53|CM-6,CN-L3|8.1.10.6(d),CSCv6|9,CSF|PR.IP-1,ITSG-33|CM-6,LEVEL|1S,NESA|T3.2.1,SWIFT-CSCv1|2.3"
+      see_also    : "https://workbench.cisecurity.org/files/2385"
+      value_type  : POLICY_DWORD
+      value_data  : 0
+      reg_key     : "HKLM\Software\Policies\Google\Chrome"
+      reg_item    : "RemoteAccessHostRequireCurtain"
+      reg_option  : CAN_NOT_BE_NULL
+    </custom_item>
+
+    <custom_item>
+      type        : REGISTRY_SETTING
+      description : "1.1.2 Ensure 'Allow gnubby authentication for remote access hosts' is set to 'Disabled'."
+      info        : "Google Chrome offers to proxy gnubby authentication requests U2F across a remote host connection."
+      solution    : "To establish the recommended configuration via Group Policy, set the following UI path to Disabled.
+          Impact:
+          If this setting is disabled, gnubby authentication requests will not be proxied."
+      reference   : "800-171|3.1.5,800-53|AC-6,CN-L3|7.1.3.2(b),CN-L3|7.1.3.2(g),CN-L3|8.1.10.6(a),CN-L3|8.1.4.2(d),CSCv7|9,CSF|PR.AC-4,CSF|PR.DS-5,ITSG-33|AC-6,LEVEL|1S,NESA|T5.1.1,NESA|T5.2.2,NESA|T5.4.1,NESA|T5.4.4,NESA|T5.4.5,NESA|T5.5.4,NESA|T5.6.1,NESA|T7.5.3,NIAv2|AM1,NIAv2|AM23f,NIAv2|SS13c,NIAv2|SS15c,SWIFT-CSCv1|5.1,TBA-FIISB|31.4.2,TBA-FIISB|31.4.3"
+      see_also    : "https://workbench.cisecurity.org/files/2385"
+      value_type  : POLICY_DWORD
+      value_data  : 0
+      reg_key     : "HKLM\Software\Policies\Google\Chrome"
+      reg_item    : "RemoteAccessHostAllowGnubbyAuth"
+      reg_option  : CAN_NOT_BE_NULL
+    </custom_item>
+
+    <custom_item>
+      type        : REGISTRY_SETTING
+      description : "1.1.3 Ensure 'Allow remote users to interact with elevated windows in remote assistance sessions' is set to 'Disabled'."
+       info        : "Google Chrome offers to run the remote assistance host in a process with uiAccess permissions. This allows remote users to interact with elevated windows on the local user's desktop."
+       solution    : "To establish the recommended configuration via Group Policy, set the following UI path to Disabled.
+
+          Computer Configuration\Administrative Templates\Google\Google Chrome\Configure remote access options\Allow remote users to interact with elevated windows in remote assistance sessions
+
+          Impact :   If this setting is disabled, the remote assistance host will run in the user's context. Furthermore, remote users cannot interact with elevated windows on the desktop."
+      reference   : "800-171|3.4.6,800-171|3.4.7,800-53|CM-7,CN-L3|7.1.3.5(c),CN-L3|7.1.3.7(d),CN-L3|8.1.4.4(b),CSCv7|4,CSF|PR.IP-1,CSF|PR.PT-3,ITSG-33|CM-7,LEVEL|1S,NIAv2|SS13b,NIAv2|SS14a,NIAv2|SS14c,NIAv2|SS15a,SWIFT-CSCv1|2.3"
+      see_also    : "https://workbench.cisecurity.org/files/2385"
+      value_type  : POLICY_DWORD
+      value_data  : 0
+      reg_key     : "HKLM\Software\Policies\Google\Chrome"
+      reg_item    : "RemoteAccessHostAllowUiAccessForRemoteAssistance"
+      reg_option  : CAN_NOT_BE_NULL
+    </custom_item>
+
+    <custom_item>
+      type        : REGISTRY_SETTING
+      description : "1.2 Ensure 'Continue running background apps when Google Chrome is closed' is set to 'Disabled'"
+      info        : "Chrome allows for processes started while the browser is open to remain running once the browser has been closed. It also allows for background apps and the current browsing session to remain active after the browser has been closed. Disabling this feature will stop all processes and background applications when the browser window is closed.
+
+          Rationale:
+          If this setting is enabled, vulnerable or malicious plugins, apps and processes can continue running even after Chrome has closed."
+      solution    : "To establish the recommended configuration via Group Policy, set the following UI path to 'Disabled'.
+
+
+          Computer Configuration\Administrative Templates\Google\Google Chrome\Continue running background apps when Google Chrome is closed
+
+
+          Impact:
+          If this policy is set to Disabled, background mode is disabled and cannot be controlled by the user in the browser settings."
+      reference   : "800-171|3.4.2,800-53|CM-6,CN-L3|8.1.10.6(d),CSCv6|7,CSF|PR.IP-1,ITSG-33|CM-6,LEVEL|1S,NESA|T3.2.1,SWIFT-CSCv1|2.3"
+      see_also    : "https://workbench.cisecurity.org/files/2385"
+      value_type  : POLICY_DWORD
+      value_data  : 0
+      reg_key     : "HKLM\Software\Policies\Google\Chrome"
+      reg_item    : "BackgroundModeEnabled"
+      reg_option  : CAN_NOT_BE_NULL
+    </custom_item>
+
+    <custom_item>
+      type        : REGISTRY_SETTING
+      description : "1.3 Ensure 'Ask where to save each file before downloading' is set to 'Enabled'"
+      info        : "Google Chrome offers to download files automatically to the default download directory without prompting."
+      solution    : "To establish the recommended configuration via Group Policy, set the following UI path to Enabled:
+
+
+          Computer Configuration\Administrative Templates\Google\Google Chrome\Ask where to save each file before downloading
+
+
+          Impact:
+          If this setting is enabled, users are always asked where to save each file before downloading."
+      reference   : "800-171|3.13.13,800-53|SC-18(2),CSCv7|8,ITSG-33|SC-18(2),LEVEL|1S"
+      see_also    : "https://workbench.cisecurity.org/files/2385"
+      value_type  : POLICY_DWORD
+      value_data  : 1
+      reg_key     : "HKLM\Software\Policies\Google\Chrome"
+      reg_item    : "PromptForDownloadLocation"
+      reg_option  : CAN_NOT_BE_NULL
+    </custom_item>
+
+    <custom_item>
+      type        : REGISTRY_SETTING
+      description : "1.4 Ensure 'Disable saving browser history' is set to 'Disabled'"
+      info        : "Google Chrome allows to save the browser history."
+      solution    : "To establish the recommended configuration via Group Policy, set the following UI path to Disabled:
+
+
+          Computer Configuration\Administrative Templates\Google\Google Chrome\Disable saving browser history
+
+
+          Impact:
+          All user browser history will be saved."
+      reference   : "800-171|3.4.2,800-53|CM-6,CN-L3|8.1.10.6(d),CSCv7|8,CSF|PR.IP-1,ITSG-33|CM-6,LEVEL|1S,NESA|T3.2.1,SWIFT-CSCv1|2.3"
+      see_also    : "https://workbench.cisecurity.org/files/2385"
+      value_type  : POLICY_DWORD
+      value_data  : 0
+      reg_key     : "HKLM\Software\Policies\Google\Chrome"
+      reg_item    : "SavingBrowserHistoryDisabled"
+      reg_option  : CAN_NOT_BE_NULL
+    </custom_item>
+
+    <custom_item>
+      type        : REGISTRY_SETTING
+      description : "1.5 Ensure 'Enable HTTP/0.9 support on non-default ports' is set to 'Disabled'"
+      info        : "Non-HTTP services' responses may be read via XHR as their response streams will be interpreted by Chrome as HTTP/0.9. This setting allows to enable HTTP/0.9 on ports other than 80 for HTTP and 443 for HTTPS."
+      solution    : "To establish the recommended configuration via Group Policy, set the following UI path to Disabled:
+
+
+          Computer Configuration\Administrative Templates\Google\Google Chrome\Enable HTTP/0.9 support on non-default ports
+
+
+          Impact:
+          If this setting is disabled, HTTP/0.9 will be disabled on non-default ports 80/443."
+      reference   : "800-171|3.4.2,800-53|CM-6,CN-L3|8.1.10.6(d),CSCv7|9.2,CSF|PR.IP-1,ITSG-33|CM-6,LEVEL|1S,NESA|T3.2.1,SWIFT-CSCv1|2.3"
+      see_also    : "https://workbench.cisecurity.org/files/2385"
+      value_type  : POLICY_DWORD
+      value_data  : 0
+      reg_key     : "HKLM\Software\Policies\Google\Chrome"
+      reg_item    : "Http09OnNonDefaultPortsEnabled"
+      reg_option  : CAN_NOT_BE_NULL
+    </custom_item>
+
+    <custom_item>
+      type        : REGISTRY_SETTING
+      description : "1.6 Ensure 'Enable component updates in Google Chrome' is set to 'Enabled'"
+      info        : "Google Chrome's Component Updater updates several components of Google Chrome (like the Adobe Flash Player, Widevine DRM, Chrome updater recovery component) on a regular basis."
+      solution    : "To establish the recommended configuration via Group Policy, set the following UI path to Enabled:
+
+
+          Computer Configuration\Administrative Templates\Google\Google Chrome\Enable component updates in Google Chrome
+
+
+          Impact:
+          Google Chrome Updater keeps the components bundled to Chrome up-to-date."
+      reference   : "800-171|3.14.1,800-53|SI-2(5),CSCv6|4.5,CSCv7|3.4,CSCv7|3.5,CSF|ID.RA-1,CSF|PR.IP-12,LEVEL|1S,NIAv2|NS26b,SWIFT-CSCv1|2.2"
+      see_also    : "https://workbench.cisecurity.org/files/2385"
+      value_type  : POLICY_DWORD
+      value_data  : 1
+      reg_key     : "HKLM\Software\Policies\Google\Chrome"
+      reg_item    : "ComponentUpdatesEnabled"
+      reg_option  : CAN_NOT_BE_NULL
+    </custom_item>
