@@ -1,0 +1,432 @@
+<Custom item>
+Impact:If the screensaver is not set users may leave the computer available for an unauthorized person to access information."
+ In Terminal, run one of the the following commands:defaults -currentHost write com.apple.screensaver idleTime -int 600defaults -currentHost write com.apple.screensaver idleTime -int 1200There are anomalies if the command line is used to make the setting something other than what is available in the GUI Menu. Choose either 10 minutes or 20 minutes,
+ Alternatively:
+  info : "A locking screensaver is one of the standard security controls to limit access to a computer and the current user's session when the computer is temporarily unused or unattended. In macOS the screensaver starts after a value selected in a drop down menu, 10 minutes and 20 minutes are both options and either is acceptable. Any value can be selected through the command line or script but a number that is not reflected in the GUI can be problematic. 20 minutes is the default for new accounts.
+  plist_name : "com.apple.screensaver"
+  plist_user : "all"
+  solution : "Perform the following to implement the prescribed state:Open System PreferencesSelect Desktop & Screen SaverSelect Screen__SaverSet Start after to 20 minutes or less
+  byhost : YES
+  see_also : "https://workbench.cisecurity.org/files/2708"
+  reference : "800-171|3.1.10,800-53|AC-11,CN-L3|8.1.4.1(b),CSCv7|16.11,ISO/IEC-27001|A.11.2.8,ITSG-33|AC-11,LEVEL|1S,NIAv2|AM23c,NIAv2|AM23d"
+  regex : ".* = ([1-9]|[1-9][0-9]|[1-9][0-9][0-9]|1[0-1][0-9][0-9]|1200)$"
+  plist_item : "idleTime"
+ Rationale:Setting an inactivity interval for the screensaver prevents unauthorized persons from viewing a system left unattended for an extensive period of time."
+  plist_option : CANNOT_BE_NULL
+ type : MACOSX_DEFAULTS_READ
+  description : "2.3.1 Set an inactivity interval of 20 minutes or less for the screen saver"
+</Custom item>
+
+<Custom item>
+In System Preferences: Desktop & Screen Saver: Screen Saver: Hot Corners, make sure at least one Active Screen Corner is set to Start Screen Saver. Make sure the user knows about this feature.The screen corners can be set using the defaults command, but the permutations of combinations are many. The plist file to check is ~/Library/Preferences/com.apple.dock and the keys arewvous-bl-cornerwvous-br-cornerwvous-tl-cornerwvous-tr-cornerThere are also modifier keys to check and various values for each of these keys. A value of 5 means the corner will start the screen saver. The corresponding wvous-xx-modifier key should be set to 0."
+  see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "In 10.13 Apple added a 'Lock Screen' option to the Apple Menu. Prior to this the best quick lock options were to use either a lock screen option with the screen saver or the lock screen option from Keychain Access if status was made available in the menu bar. As of 10.13 the menu bar option is no longer available. The intent of this control is to resemble control-alt-delete on Windows Systems as a means of quickly locking the screen. If the user of the system is stepping away from the computer the best practice is to lock the screen and setting a hot corner is an appropriate method.
+  reference : "800-171|3.1.10,800-53|AC-11,CN-L3|8.1.4.1(b),CSCv7|16.11,ISO/IEC-27001|A.11.2.8,ITSG-33|AC-11,LEVEL|1NS,NESA|T2.3.8,NESA|T2.3.9,NIAv2|AM23a,NIAv2|AM23b"
+  cmd : "/usr/bin/defaults read ~/Library/Preferences/com.apple.dock | /usr/bin/grep -i corner"
+ Rationale:Ensuring the user has a quick method to lock their screen may reduce opportunity for individuals in close physical proximity of the device to see screen contents."
+ type : CMD_EXEC
+  solution : "Ensure users know how to lock screen using the Apple Menu 'Lock Screen' option when briefly stepping away from the computer.Alternatively
+  expect : "\".*-corner\"[\\s]*=[\\s]*5;$"
+  description : "2.3.3 Familiarize users with screen lock tools or corner to Start Screen Saver"
+</Custom item>
+
+<Custom item>
+Impact:With remote Apple events turned on, an AppleScript program running on another Mac can interact with the local computer."
+  see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "Apple Events is a technology that allows one program to communicate with other programs. Remote Apple Events allows a program on one computer to communicate with a program on a different computer.
+  reference : "800-171|3.4.6,800-171|3.4.7,800-53|CM-7,CIP|007-6-R1,CN-L3|7.1.3.5(c),CN-L3|7.1.3.7(d),CN-L3|8.1.4.4(b),CSCv7|9.2,CSF|PR.IP-1,CSF|PR.PT-3,ITSG-33|CM-7,LEVEL|1S,NIAv2|SS13b,NIAv2|SS14a,NIAv2|SS14c,NIAv2|SS15a,PCI-DSSv3.1|2.2.2,PCI-DSSv3.1|2.2.3,PCI-DSSv3.2|2.2.2,PCI-DSSv3.2|2.2.3,QCSC-v1|3.2,SWIFT-CSCv1|2.3"
+  cmd : "/usr/sbin/systemsetup -getremoteappleevents"
+ Rationale:Disabling Remote Apple Events mitigates the risk of an unauthorized program gaining access to the system."
+ Run the following command in Terminal:sudo systemsetup -setremoteappleevents off
+ type : CMD_EXEC
+  solution : "Perform the following to implement the prescribed state:
+  expect : "^Remote Apple Events:[\\s]*Off"
+  description : "2.4.1 Disable Remote Apple Events"
+</Custom item>
+
+<Custom item>
+Impact:Internet sharing allows the computer to function as a router and other computers to use it for access. This can expose both the computer itself and the networks it is accessing to unacceptable access from unapproved devices.
+  see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "Internet Sharing uses the open source natd process to share an internet connection with other computers and devices on a local network. This allows the Mac to function as a router and share the connection to other, possibly unauthorized, devices.
+ References:STIGID AOSX-12-001270"
+  reference : "800-171|3.4.2,800-53|CM-6,CN-L3|8.1.10.6(d),CSCv7|9.2,CSF|PR.IP-1,ITSG-33|CM-6,LEVEL|1S,NESA|T3.2.1,PCI-DSSv3.1|2.2.4,PCI-DSSv3.2|2.2.4,SWIFT-CSCv1|2.3"
+  cmd : "/usr/bin/defaults read /Library/Preferences/SystemConfiguration/com.apple.nat | /usr/bin/grep -i Enabled | /usr/bin/grep -v 0 | /usr/bin/awk '{print} END {if (NR == 0) print\"pass\"}'"
+ Rationale:Disabling Internet Sharing reduces the remote attack surface of the system."
+ type : CMD_EXEC
+  solution : "Perform the following to implement the prescribed state:Open System PreferencesSelect SharingUncheck Internet Sharing
+  expect : "pass"
+  description : "2.4.2 Disable Internet Sharing"
+</Custom item>
+
+<Custom item>
+ see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "Screen sharing allows a computer to connect to another computer on a network and display the computer's screen. While sharing the computer's screen, the user can control what happens on that computer, such as opening documents or applications, opening, moving, or closing windows, and even shutting down the computer.
+ References:
+  reference : "800-171|3.4.6,800-171|3.4.7,800-53|CM-7,CIP|007-6-R1,CN-L3|7.1.3.5(c),CN-L3|7.1.3.7(d),CN-L3|8.1.4.4(b),CSCv7|9.2,CSF|PR.IP-1,CSF|PR.PT-3,ITSG-33|CM-7,LEVEL|1S,NIAv2|SS13b,NIAv2|SS14a,NIAv2|SS14c,NIAv2|SS15a,PCI-DSSv3.1|2.2.2,PCI-DSSv3.1|2.2.3,PCI-DSSv3.2|2.2.2,PCI-DSSv3.2|2.2.3,QCSC-v1|3.2,SWIFT-CSCv1|2.3"
+  cmd : "/bin/launchctl load /System/Library/LaunchDaemons/com.apple.screensharing.plist"
+ http://support.apple.com/kb/ph11151"
+ Rationale:Disabling screen sharing mitigates the risk of remote connections being made without the user of the console knowing that they are sharing the computer."
+ type : CMD_EXEC
+  solution : "Perform the following to implement the prescribed state:Open System PreferencesSelect SharingUncheck Screen Sharing
+  expect : "Service[\\s]+is[\\s]+disabled"
+  description : "2.4.3 Disable Screen Sharing"
+</Custom item>
+
+<Custom item>
+ see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "By enabling Printer sharing the computer is set up as a print server to accept print jobs from other computers. Dedicated print servers or direct IP printing should be used instead.
+ References:
+  reference : "800-171|3.4.2,800-53|CM-6,CN-L3|8.1.10.6(d),CSCv7|9.2,CSF|PR.IP-1,ITSG-33|CM-6,LEVEL|1S,NESA|T3.2.1,PCI-DSSv3.1|2.2.4,PCI-DSSv3.2|2.2.4,SWIFT-CSCv1|2.3"
+  cmd : "/usr/sbin/system_profiler SPPrintersDataType"
+ http://support.apple.com/kb/PH11450"
+ Rationale:Disabling Printer Sharing mitigates the risk of attackers attempting to exploit the print server to gain access to the system."
+ type : CMD_EXEC
+  solution : "Perform the following to implement the prescribed state:Open System PreferencesSelect SharingUncheck Printer Sharing
+  expect : "(The[\\s]*printers[\\s]*list[\\s]*is[\\s]*empty|Shared:[\\s]+No)"
+  description : "2.4.4 Disable Printer Sharing"
+</Custom item>
+
+<Custom item>
+Impact:The SSH server built-in to macOS should not be enabled on a standard user computer, particularly one that changes locations and IP addresses. A standard user that runs local applications including email, web browser and productivity tools should not use the same device as a server. There are Enterprise management tool-sets that still do utilize SSH. If legacy client SSH server reliant tools are in use the computer should be locked down to only respond to known trusted IP addresses and appropriate admin service accounts.
+  info : "Remote Login allows an interactive terminal connection to a computer.
+ For macOS computers that are being used for specialized functions there are several options to harden the SSH server to protect against unauthorized access including brute force attacks. There are some basic criteria that need to be considered:Do not open an SSH server to the internet without controls in place to mitigate SSH brute force attacks, this is particularly important for systems bound to Directory environments. It is great to have controls in place to protect the system but if they trigger after the user is already locked out of their account they are not optimal. If authorization happens after authentication directory accounts for users that don't even use the system can be locked out.Do not use SSH key pairs when there is no insight to the security on the client system that will authenticate into the server with a private key. If an attacker gets access to the remote system and can find the key they may not need a password or a key logger to access the SSH server.Detailed instructions on hardening an SSH server, if needed, are available in the CIS Linux Benchmarks but it is beyond the scope of this benchmark
+ Run the following command in Terminal:sudo systemsetup -setremotelogin off
+  solution : "Perform the following to implement the prescribed state:
+  see_also : "https://workbench.cisecurity.org/files/2708"
+  reference : "800-171|3.1.1,800-171|3.1.2,800-53|AC-17,CIP|005-5-R2,CN-L3|8.1.10.6(i),CN-L3|8.1.4.4(c),CSCv7|9.2,CSF|PR.AC-3,CSF|PR.PT-4,ISO/IEC-27001|A.6.2.2,ITSG-33|AC-17,LEVEL|1S,NESA|T5.4.5,QCSC-v1|3.2,QCSC-v1|5.2.1,QCSC-v1|5.2.2,SWIFT-CSCv1|2.6"
+  cmd : "/usr/sbin/systemsetup -getremotelogin"
+ Rationale:Disabling Remote Login mitigates the risk of an unauthorized person gaining access to the system via Secure Shell (SSH). While SSH is an industry standard to connect to posix servers, the scope of the benchmark is for Apple macOS clients, not servers.macOS does have an IP based firewall available (pf, ipfw has been deprecated) that is not enabled or configured. There are more details and links in section 7.5. macOS no longer has TCP Wrappers support built-in and does not have strong Brute-Force password guessing mitigations, or frequent patching of openssh by Apple. Most macOS computers are mobile workstations, managing IP based firewall rules on mobile devices can be very resource intensive. All of these factors can be parts of running a hardened SSH server."
+ type : CMD_EXEC
+  expect : "^Remote[\\s]*Login:[\\s]*Off$"
+ Notes:man sshd_config"
+  description : "2.4.5 Disable Remote Login"
+</Custom item>
+
+<Custom item>
+Impact:Many Apple devices are now sold without optical drives and drive sharing may be needed for legacy optical media."
+  see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "DVD or CD Sharing allows users to remotely access the system's optical drive.
+  reference : "800-171|3.4.6,800-171|3.4.7,800-53|CM-7,CIP|007-6-R1,CN-L3|7.1.3.5(c),CN-L3|7.1.3.7(d),CN-L3|8.1.4.4(b),CSCv7|9.2,CSF|PR.IP-1,CSF|PR.PT-3,ITSG-33|CM-7,LEVEL|1S,NIAv2|SS13b,NIAv2|SS14a,NIAv2|SS14c,NIAv2|SS15a,PCI-DSSv3.1|2.2.2,PCI-DSSv3.1|2.2.3,PCI-DSSv3.2|2.2.2,PCI-DSSv3.2|2.2.3,QCSC-v1|3.2,SWIFT-CSCv1|2.3"
+  cmd : "/bin/launchctl list | /usr/bin/egrep ODSAgent | /usr/bin/awk '{print} END {if (NR == 0) print \"none\"}'"
+ Rationale:Disabling DVD or CD Sharing minimizes the risk of an attacker using the optical drive as a vector for attack and exposure of sensitive data."
+ type : CMD_EXEC
+  solution : "Perform the following to implement the prescribed state:Open System PreferencesSelect SharingUncheck DVD or CD Sharing
+  expect : "none"
+  description : "2.4.6 Disable DVD or CD Sharing"
+</Custom item>
+
+<Custom item>
+Impact:Control 2.1.1 discusses disabling Bluetooth if no paired devices exist. There is a general expectation that Bluetooth peripherals will be used by most users in Apple's ecosystem, it is possible that sharing is required and Bluetooth peripherals are not. Bluetooth must be enabled if sharing is an acceptable use case."
+  see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "Bluetooth Sharing allows files to be exchanged with Bluetooth enabled devices.
+  reference : "800-171|3.4.6,800-171|3.4.7,800-53|CM-7,CIP|007-6-R1,CN-L3|7.1.3.5(c),CN-L3|7.1.3.7(d),CN-L3|8.1.4.4(b),CSCv7|9.2,CSF|PR.IP-1,CSF|PR.PT-3,ITSG-33|CM-7,LEVEL|1S,NIAv2|SS13b,NIAv2|SS14a,NIAv2|SS14c,NIAv2|SS15a,PCI-DSSv3.1|2.2.2,PCI-DSSv3.1|2.2.3,PCI-DSSv3.2|2.2.2,PCI-DSSv3.2|2.2.3,QCSC-v1|3.2,SWIFT-CSCv1|2.3"
+  cmd : "/usr/sbin/system_profiler SPBluetoothDataType | /usr/bin/grep State | /usr/bin/awk '{print} END {if (NR == 0) print \"none\"}'"
+ Rationale:Disabling Bluetooth Sharing minimizes the risk of an attacker using Bluetooth to remotely attack the system."
+ type : CMD_EXEC
+  solution : "Perform the following to implement the prescribed state:Open System PreferencesSelect SharingUncheck Bluetooth Sharing
+  expect : "(none|State:[\\s]*Disabled)"
+  description : "2.4.7 Disable Bluetooth Sharing"
+</Custom item>
+
+<Custom item>
+Run the following command in Terminal to turn off AFP from the command line:sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.AppleFileServer.plist
+ Impact:File Sharing can be used to share documents with other users, but hardened servers should be used rather than user endpoints. Turning on file sharing increases the visibility and attack surface of a system unnecessarily."
+  info : "Apple's File Sharing uses a combination of SMB (Windows sharing) and AFP (Mac sharing)
+  solution : "Perform the following to implement the prescribed state:
+  see_also : "https://workbench.cisecurity.org/files/2708"
+ Run the following command in Terminal to turn off SMB sharing from the CLI:sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.smbd.plist
+  reference : "800-171|3.4.6,800-171|3.4.7,800-53|CM-7,CIP|007-6-R1,CN-L3|7.1.3.5(c),CN-L3|7.1.3.7(d),CN-L3|8.1.4.4(b),CSCv7|9.2,CSF|PR.IP-1,CSF|PR.PT-3,ITSG-33|CM-7,LEVEL|1S,NIAv2|SS13b,NIAv2|SS14a,NIAv2|SS14c,NIAv2|SS15a,PCI-DSSv3.1|2.2.2,PCI-DSSv3.1|2.2.3,PCI-DSSv3.2|2.2.2,PCI-DSSv3.2|2.2.3,QCSC-v1|3.2,SWIFT-CSCv1|2.3"
+  cmd : "/bin/launchctl list | /usr/bin/grep AppleFileServer | /usr/bin/awk '{print} END {if (NR == 0) print \"none\"}'"
+ Rationale:By disabling file sharing, the remote attack surface and risk of unauthorized access to files stored on the system is reduced."
+ type : CMD_EXEC
+  expect : "none"
+  description : "2.4.8 Disable File Sharing - AppleFileServer"
+ Two common ways to share files using File Sharing are:Apple File Protocol (AFP) AFP automatically uses encrypted logins, so this method of sharing files is fairly secure. The entire hard disk is shared to administrator user accounts. Individual home folders are shared to their respective user accounts. Users' 'Public' folders (and the 'Drop Box' folder inside) are shared to any user account that has sharing access to the computer (i.e. anyone in the 'staff' group, including the guest account if it is enabled).Server Message Block (SMB), Common Internet File System (CIFS) When Windows (or possibly Linux) computers need to access file shared on a Mac, SMB/CIFS file sharing is commonly used. Apple warns that SMB sharing stores passwords in a less secure fashion than AFP sharing and anyone with system access can gain access to the password for that account. When sharing with SMB, each user that will access the Mac must have SMB enabled.
+</Custom item>
+
+<Custom item>
+Run the following command in Terminal to turn off AFP from the command line:sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.AppleFileServer.plist
+ Impact:File Sharing can be used to share documents with other users, but hardened servers should be used rather than user endpoints. Turning on file sharing increases the visibility and attack surface of a system unnecessarily."
+  info : "Apple's File Sharing uses a combination of SMB (Windows sharing) and AFP (Mac sharing)
+  solution : "Perform the following to implement the prescribed state:
+  see_also : "https://workbench.cisecurity.org/files/2708"
+ Run the following command in Terminal to turn off SMB sharing from the CLI:sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.smbd.plist
+  reference : "800-171|3.4.6,800-171|3.4.7,800-53|CM-7,CIP|007-6-R1,CN-L3|7.1.3.5(c),CN-L3|7.1.3.7(d),CN-L3|8.1.4.4(b),CSCv7|9.2,CSF|PR.IP-1,CSF|PR.PT-3,ITSG-33|CM-7,LEVEL|1S,NIAv2|SS13b,NIAv2|SS14a,NIAv2|SS14c,NIAv2|SS15a,PCI-DSSv3.1|2.2.2,PCI-DSSv3.1|2.2.3,PCI-DSSv3.2|2.2.2,PCI-DSSv3.2|2.2.3,QCSC-v1|3.2,SWIFT-CSCv1|2.3"
+  cmd : "/bin/launchctl list | /usr/bin/grep smbd | /usr/bin/awk '{print} END {if (NR == 0) print \"none\"}'"
+ Rationale:By disabling file sharing, the remote attack surface and risk of unauthorized access to files stored on the system is reduced."
+ type : CMD_EXEC
+  expect : "none"
+  description : "2.4.8 Disable File Sharing - SMB"
+ Two common ways to share files using File Sharing are:Apple File Protocol (AFP) AFP automatically uses encrypted logins, so this method of sharing files is fairly secure. The entire hard disk is shared to administrator user accounts. Individual home folders are shared to their respective user accounts. Users' 'Public' folders (and the 'Drop Box' folder inside) are shared to any user account that has sharing access to the computer (i.e. anyone in the 'staff' group, including the guest account if it is enabled).Server Message Block (SMB), Common Internet File System (CIFS) When Windows (or possibly Linux) computers need to access file shared on a Mac, SMB/CIFS file sharing is commonly used. Apple warns that SMB sharing stores passwords in a less secure fashion than AFP sharing and anyone with system access can gain access to the password for that account. When sharing with SMB, each user that will access the Mac must have SMB enabled.
+</Custom item>
+
+<Custom item>
+Impact:Many organizations utilize ARD for client management.
+  see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "Remote Management is the client portion of Apple Remote Desktop (ARD). Remote Management can be used by remote administrators to view the current Screen, install software, report on, and generally manage client Macs.The screen sharing options in Remote Management are identical to those in the Screen Sharing section. In fact, only one of the two can be configured. If Remote Management is used, refer to the Screen Sharing section above on issues regard screen sharing.Remote Management should only be enabled when a Directory is in place to manage the accounts with access. Computers will be available on port 5900 on a macOS System and could accept connections from untrusted hosts depending on the configuration, definitely a concern for mobile systems.
+  reference : "800-171|3.4.6,800-171|3.4.7,800-53|CM-7,CIP|007-6-R1,CN-L3|7.1.3.5(c),CN-L3|7.1.3.7(d),CN-L3|8.1.4.4(b),CSCv7|14.3,CSCv7|4.3,CSCv7|9.2,CSF|PR.IP-1,CSF|PR.PT-3,ITSG-33|CM-7,LEVEL|1S,NIAv2|SS13b,NIAv2|SS14a,NIAv2|SS14c,NIAv2|SS15a,PCI-DSSv3.1|2.2.2,PCI-DSSv3.1|2.2.3,PCI-DSSv3.2|2.2.2,PCI-DSSv3.2|2.2.3,QCSC-v1|3.2,SWIFT-CSCv1|2.3"
+  cmd : "/bin/ps -ef | /usr/bin/egrep ARDAgent | /usr/bin/grep -v egrep | /usr/bin/awk '{print} END {if (NR == 0) print \"none\"}'"
+ Rationale:Remote management should only be enabled on trusted networks with strong user controls present in a Directory system. Mobile devices without strict controls are vulnerable to exploit and monitoring."
+ type : CMD_EXEC
+  solution : "In System Preferences: Sharing, turn off Remote Management.
+  expect : "none"
+ Notes:/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -help"
+  description : "2.4.9 Disable Remote Management"
+</Custom item>
+
+<Custom item>
+Impact:Mounting a FileVaulted volume from an alternate boot source will require a valid password to decrypt it.
+  see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "FileVault secures a system's data by automatically encrypting its boot volume and requiring a password or recovery key to access it.
+  reference : "800-171|3.13.16,800-53|SC-28(1),CSCv7|13.6,CSCv7|14.8,CSF|PR.DS-1,ITSG-33|SC-28(1),LEVEL|1S,QCSC-v1|5.2.2,QCSC-v1|6.2,TBA-FIISB|28.1"
+  cmd : "/usr/bin/fdesetup status"
+ Rationale:Encrypting sensitive data minimizes the likelihood of unauthorized users gaining access to it."
+ type : CMD_EXEC
+  solution : "Perform the following to implement the prescribed state:Open System PreferencesSelect Security & PrivacySelect FileVaultSelect Turn on FileVault
+  expect : "FileVault[\\s]+is[\\s]+On."
+ Notes:FileVault may not be desirable on a virtual OS. As long as the hypervisor and file storage are encrypted the virtual OS does not need to be. Rather than checking if the OS is virtual and passing the control regardless of the encryption of the host system the normal check will be run. Security officials can evaluate the comprehensive controls outside of the OS being tested."
+  description : "2.5.1.1 Enable FileVault"
+</Custom item>
+
+<Custom item>
+Impact:While FileVault protects the boot volume data may be copied to other attached storage and reduce the protection afforded by FileVault. Ensure all user volumes are encrypted to protect data."
+  see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "Apple developed a new file system that was first made available in 10.12 and then became the default in 10.13. The file system is optimized for Flash and Solid State storage and encryption. https://en.wikipedia.org/wiki/Apple_File_System macOS computers generally have several volumes created as part of APFS formatting including Preboot, Recovery and Virtual Memory (VM) as well as traditional user disks.All APFS volumes that do not have specific roles that do not require encryption should be encrypted. 'Role' disks include Preboot, Recovery and VM. User disks are labelled with '(No specific role)' by default.
+  reference : "800-171|3.4.6,800-171|3.4.7,800-53|CM-7,CN-L3|7.1.3.5(c),CN-L3|7.1.3.7(d),CN-L3|8.1.4.4(b),CSCv7|13.6,CSCv7|14.8,CSF|PR.IP-1,CSF|PR.PT-3,ITSG-33|CM-7,LEVEL|1NS,NIAv2|SS13b,NIAv2|SS14a,NIAv2|SS14c,NIAv2|SS15a,QCSC-v1|3.2,SWIFT-CSCv1|2.3"
+ Note: APFS Encrypted disks will be described as 'FileVault' whether they are the boot volume or not in the ap list
+  cmd : "/usr/sbin/diskutil ap list"
+ Rationale:In order to protect user data from loss or tampering volumes carrying data should be encrypted"
+ type : CMD_EXEC
+  solution : "Use Disk Utility to erase a user disk and format as APFS (Encrypted)
+  expect : "FileVault[\\s]*:[\\s]*Yes"
+  description : "2.5.1.2 Ensure all user storage APFS volumes are encrypted"
+</Custom item>
+
+<Custom item>
+Impact:While FileVault protects the boot volume data may be copied to other attached storage and reduce the protection afforded by FileVault. Ensure all user volumes are encrypted to protect data."
+  see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "Apple introduced Core Storage with 10.7. It is used as the default for formatting on macOS volumes prior to 10.13.All HFS and Core Storage Volumes should be encrypted
+  reference : "800-171|3.4.6,800-171|3.4.7,800-53|CM-7,CN-L3|7.1.3.5(c),CN-L3|7.1.3.7(d),CN-L3|8.1.4.4(b),CSCv7|13.6,CSCv7|14.8,CSF|PR.IP-1,CSF|PR.PT-3,ITSG-33|CM-7,LEVEL|1NS,NIAv2|SS13b,NIAv2|SS14a,NIAv2|SS14c,NIAv2|SS15a,QCSC-v1|3.2,SWIFT-CSCv1|2.3"
+  cmd : "/usr/sbin/diskutil cs list"
+ Rationale:In order to protect user data from loss or tampering volumes carrying data should be encrypted"
+ type : CMD_EXEC
+  solution : "Use Disk Utility to erase a disk and format as macOS Extended (Journaled, Encrypted)
+  expect : "Encryption[\\s]+Type[\\s]*:[\\s]*AES-XTS"
+  description : "2.5.1.3 Ensure all user storage CoreStorage volumes are encrypted"
+</Custom item>
+
+<Custom item>
+ see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "Gatekeeper is Apple's application white-listing control that restricts downloaded applications from launching. It functions as a control to limit applications from unverified sources from running without authorization.
+  reference : "800-171|3.4.8,800-53|CM-7(4),CSCv7|2.6,CSCv7|2.7,CSF|PR.IP-1,CSF|PR.PT-3,ISO/IEC-27001|A.12.6.2,LEVEL|1S,NIAv2|SS13a,QCSC-v1|3.2,SWIFT-CSCv1|2.3,TBA-FIISB|44.2.2,TBA-FIISB|49.2.3"
+ Alternatively, perform the following to ensure the system is configured as:
+  cmd : "/usr/sbin/spctl --status"
+ Select Allow applications downloaded from: Mac App Store and identified developers
+ Rationale:Disallowing unsigned software will reduce the risk of unauthorized or malicious applications from running on the system."
+ Run the following command in Terminal:sudo spctl --master-enable"
+ type : CMD_EXEC
+  solution : "Perform the following to implement the prescribed state:Open System PreferencesSelect Security & PrivacySelect General
+  expect : "assessments[\\s]*enabled"
+  description : "2.5.2 Enable Gatekeeper"
+</Custom item>
+
+<Custom item>
+Impact:The firewall may block legitimate traffic. Applications that are unsigned will require special handling.
+ Alternatively:
+  info : "A firewall is a piece of software that blocks unwanted incoming connections to a system. Apple has posted general documentation about the application firewall.
+  plist_name : "/Library/Preferences/com.apple.alf"
+ Run the following command in Terminal:defaults write /Library/Preferences/com.apple.alf globalstate - int <value>
+  solution : "Perform the following to implement the prescribed state:Open System PreferencesSelect Security & PrivacySelect FirewallSelect Turn On Firewall
+  see_also : "https://workbench.cisecurity.org/files/2708"
+  reference : "800-171|3.13.1,800-53|SC-7(12),CSCv7|9.4,ITSG-33|SC-7(12),LEVEL|1S,NIAv2|AM38,NIAv2|SS13d,NIAv2|SS26,QCSC-v1|5.2.1,QCSC-v1|5.2.2,QCSC-v1|6.2,QCSC-v1|8.2.1"
+  regex : "[12]"
+  plist_item : "globalstate"
+ http://docs.info.apple.com/article.html?artnum=306938"
+ Where <value> is:1 = on for specific services2 = on for essential services
+ Rationale:A firewall minimizes the threat of unauthorized users from gaining access to your system while connected to a network or the Internet."
+  plist_option : CANNOT_BE_NULL
+ type : MACOSX_DEFAULTS_READ
+ Notes:
+  description : "2.5.3 Enable Firewall"
+</Custom item>
+
+<Custom item>
+Impact:Traditional network discovery tools like ping will not succeed. Other network tools that measure activity and approved applications will work as expected.This control aligns with the primary macOS use case of a laptop that is often connected to untrusted networks where host segregation may be non-existent. In that use case hiding from the other inmates is likely more than desirable. In use cases where use is only on trusted LANs with static IP addresses stealth mode may not be desirable.
+ Alternatively:
+  info : "While in Stealth mode the computer will not respond to unsolicited probes, dropping that traffic.
+ Run the following command in Terminal:sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
+  solution : "Perform the following to implement the prescribed state:Open System PreferencesSelect Security & PrivacySelect Firewall OptionsSelect Enable stealth mode
+  see_also : "https://workbench.cisecurity.org/files/2708"
+  reference : "800-171|3.13.1,800-53|SC-7(12),CSCv7|9.4,ITSG-33|SC-7(12),LEVEL|1S,NIAv2|AM38,NIAv2|SS13d,NIAv2|SS26,QCSC-v1|5.2.1,QCSC-v1|5.2.2,QCSC-v1|6.2,QCSC-v1|8.2.1"
+  cmd : "/usr/libexec/ApplicationFirewall/socketfilterfw --getstealthmode"
+ http://osxdaily.com/2015/11/18/enable-stealth-mode-mac-os-x-firewall/"
+ Rationale:Stealth mode on the firewall minimizes the threat of system discovery tools while connected to a network or the Internet."
+ type : CMD_EXEC
+  expect : "Stealth mode enabled"
+ Notes:
+  description : "2.5.4 Enable Firewall Stealth Mode"
+</Custom item>
+
+<Custom item>
+Alternatively:
+  info : "A firewall is a piece of software that blocks unwanted incoming connections to a system. Apple has posted general documentation about the application firewall.
+  solution : "Perform the following to implement the prescribed state:Open System PreferencesSelect Security & PrivacySelect Firewall OptionsSelect unneeded rulesSelect the minus sign below to delete them
+  severity : MEDIUM
+  see_also : "https://workbench.cisecurity.org/files/2708"
+ NOTE: Nessus has provided the target output to assist in reviewing the benchmark to ensure target compliance."
+  reference : "800-171|3.13.1,800-53|SC-7(12),CSCv7|9.4,ITSG-33|SC-7(12),LEVEL|1NS,NIAv2|AM38,NIAv2|SS13d,NIAv2|SS26,QCSC-v1|5.2.1,QCSC-v1|5.2.2,QCSC-v1|6.2,QCSC-v1|8.2.1"
+  cmd : "/usr/libexec/ApplicationFirewall/socketfilterfw --listapps"
+ http://support.apple.com/en-us/HT201642A computer should have a limited number of applications open to incoming connectivity.
+ Edit and run the following command in Terminal to remove specific applications:/usr/libexec/ApplicationFirewall/socketfilterfw --remove </Applications/badapp.app>Where </Applications/badapp.app> is the one to be removed"
+ Rationale:A firewall minimizes the threat of unauthorized users from gaining access to your system while connected to a network or the Internet. Which applications are allowed access to accept incoming connections through the firewall is important to understand.No applications will be listed if 'Block all incoming connections' (2) is selected
+ type : CMD_EXEC
+  expect : "Manual Review Required"
+  description : "2.5.5 Review Application Firewall Rules"
+</Custom item>
+
+<Custom item>
+ see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "One of the most important security tools for data protection on macOS is FileVault. With encryption in place it makes it difficult for an outside party to access your data if they get physical possession of the computer. One very large weakness in data protection with FileVault is the level of protection on backup volumes. If the internal drive is encrypted but the external backup volume that goes home in the same laptop bag is not it is self-defeating. Apple tries to make this mistake easily avoided by providing a checkbox to enable encryption when setting-up a time machine backup. Using this option does require some password management, particularly if a large drive is used with multiple computers. A unique complex password to unlock the drive can be stored in keychains on multiple systems for ease of use.While some portable drives may contain non-sensitive data and encryption may make interoperability with other systems difficult backup volumes should be protected just like boot volumes.
+  reference : "800-171|3.13.16,800-53|SC-28(1),CSCv7|10.4,CSF|PR.DS-1,ITSG-33|SC-28(1),LEVEL|1S,QCSC-v1|5.2.2,QCSC-v1|6.2,TBA-FIISB|28.1"
+  cmd : "/usr/bin/defaults read /Library/Preferences/com.apple.TimeMachine.plist | /usr/bin/grep LastKnownEncryptionState"
+ Rationale:Backup volumes need to be encrypted"
+ type : CMD_EXEC
+  solution : "Ensure that backup volumes are encrypted using the Time Machine control or using Disk Utility"
+  expect : "LastKnownEncryptionState[\\s]*=[\\s]*Encrypted"
+  description : "2.7.2 Time Machine Volumes Are Encrypted"
+</Custom item>
+
+<Custom item>
+ regex : "0"
+  plist_name : "/Library/Preferences/com.apple.driver.AppleIRController"
+  plist_item : "DeviceEnabled"
+  plist_option : CANNOT_BE_NULL
+ type : MACOSX_DEFAULTS_READ
+  description : "2.8 Pair the remote control infrared receiver if enabled"
+</Custom item>
+
+<Custom item>
+ info : "An infrared receiver is a piece of hardware that sends information from an infrared remote control to another device by receiving and decoding signals. If a remote is used with a computer, a specific remote, or 'pair', can be set-up to work with the computer. This will allow only the paired remote to work on that computer. If a remote is needed the receiver should only be accessible by a paired device. Many models do not have infrared hardware. The audit check looks for the hardware first.
+  plist_name : "/Library/Preferences/com.apple.driver.AppleIRController"
+  solution : "Perform one of the following to implement the prescribed state:
+  see_also : "https://workbench.cisecurity.org/files/2708"
+ References:
+  reference : "800-171|3.4.2,800-53|CM-6,CN-L3|8.1.10.6(d),CSCv7|9.2,CSF|PR.IP-1,ITSG-33|CM-6,LEVEL|1S,NESA|T3.2.1,PCI-DSSv3.1|2.2.4,PCI-DSSv3.2|2.2.4,SWIFT-CSCv1|2.3"
+  regex : "0"
+ Disable the remote control infrared receiver:Open System PreferencesSelect Security & PrivacySelect the General tabSelect AdvancedCheck Disable remote control infrared receiverPair a remote control infrared receiverHolding the remote close to the computer, point the remote at the front of the computer.Pair the Apple Remote.If you have an Apple Remote with seven buttons, press and hold both the Right and Menu buttons on the remote until the paired-remote icon appears on your screenIf you have an Apple Remote with six buttons, press and hold both the Next and Menu buttons on the remote until the paired-remote icon appears on your screen
+  plist_item : "DeviceEnabled"
+ http://support.apple.com/kb/PH11060"
+ Rationale:An infrared remote can be used from a distance to circumvent physical security controls. A remote could also be used to page through a document or presentation, thus revealing sensitive information. While Apple hardware that still supports infrared is uncommon and has not been manufactured in years it still does exist. This control checks first for the presence of an IR receiver so systems that do not have IR will quickly pass this control check."
+  plist_option : CANNOT_BE_NULL
+ type : MACOSX_DEFAULTS_READ
+  description : "2.8 Pair the remote control infrared receiver if enabled"
+</Custom item>
+
+<Custom item>
+ see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "An infrared receiver is a piece of hardware that sends information from an infrared remote control to another device by receiving and decoding signals. If a remote is used with a computer, a specific remote, or 'pair', can be set-up to work with the computer. This will allow only the paired remote to work on that computer. If a remote is needed the receiver should only be accessible by a paired device. Many models do not have infrared hardware. The audit check looks for the hardware first.
+ References:
+  reference : "800-171|3.1.18,800-53|AC-19,CSCv7|9.2,CSF|PR.AC-3,ISO/IEC-27001|A.6.2.1,ITSG-33|AC-19,LEVEL|1S,QCSC-v1|13.2,QCSC-v1|3.2,QCSC-v1|5.2.2"
+  cmd : "/usr/bin/defaults read /Library/Preferences/com.apple.driver.AppleIRController | /usr/bin/grep UIDFilter | /usr/bin/grep none | /usr/bin/awk '{print} END {if (NR == 0) print \"none\"}'"
+ Disable the remote control infrared receiver:Open System PreferencesSelect Security & PrivacySelect the General tabSelect AdvancedCheck Disable remote control infrared receiverPair a remote control infrared receiverHolding the remote close to the computer, point the remote at the front of the computer.Pair the Apple Remote.If you have an Apple Remote with seven buttons, press and hold both the Right and Menu buttons on the remote until the paired-remote icon appears on your screenIf you have an Apple Remote with six buttons, press and hold both the Next and Menu buttons on the remote until the paired-remote icon appears on your screen
+ http://support.apple.com/kb/PH11060"
+ Rationale:An infrared remote can be used from a distance to circumvent physical security controls. A remote could also be used to page through a document or presentation, thus revealing sensitive information. While Apple hardware that still supports infrared is uncommon and has not been manufactured in years it still does exist. This control checks first for the presence of an IR receiver so systems that do not have IR will quickly pass this control check."
+ type : CMD_EXEC
+  solution : "Perform one of the following to implement the prescribed state:
+  expect : "^[\\s]*none[\\s]*$"
+  description : "2.8 Pair the remote control infrared receiver if enabled"
+</Custom item>
+
+<Custom item>
+ see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "Secure Keyboard Entry prevents other applications on the system and/or network from detecting and recording what is typed into Terminal.
+  reference : "800-171|3.4.2,800-53|CM-6,CN-L3|8.1.10.6(d),CSCv7|9.2,CSF|PR.IP-1,ITSG-33|CM-6,LEVEL|1S,NESA|T3.2.1,SWIFT-CSCv1|2.3"
+  regex : "1"
+  plist_name : "com.apple.Terminal"
+  plist_item : "SecureKeyboardEntry"
+  plist_user : "all"
+ Rationale:Enabling Secure Keyboard Entry minimizes the risk of a key logger from detecting what is entered in Terminal."
+  plist_option : CANNOT_BE_NULL
+ type : MACOSX_DEFAULTS_READ
+  solution : "Perform the following to implement the prescribed state:Open TerminalSelect TerminalSelect Secure Keyboard Entry"
+  description : "2.9 Enable Secure Keyboard Entry in terminal.app"
+</Custom item>
+
+<Custom item>
+ cmd : "system_profiler SPiBridgeDataType | awk -F: '/Model Name/ {print $NF}' | sed 's/^ *//'"
+ type : CMD_EXEC
+  expect : "Apple T2 Security Chip"
+  description : "Check to see if there's an Apple T2 Security Chip on the system"
+</Custom item>
+
+<Custom item>
+ see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "In order to mitigate firmware attacks Apple has created a automated Firmware check to ensure that the EFI version running is a known good version from Apple. There is also an automated process to check it every seven days.
+  reference : "800-53|SI-7(9),CN-L3|8.1.2.3,CN-L3|8.1.4.6,CSCv7|2.2,CSF|PR.DS-6,LEVEL|1S,QCSC-v1|3.2"
+  cmd : "/usr/libexec/firmwarecheckers/eficheck/eficheck --integrity-check"
+ Rationale:If the Firmware of a computer has been compromised the Operating System that the Firmware loads cannot be trusted either."
+ https://www.apple.com/mideast/mac/docs/Apple_T2_Security_Chip_Overview.pdf"
+ type : CMD_EXEC
+  solution : "If EFI does not pass the integrity check you may send a report to Apple. Backing up files and clean installing a known good Operating System and Firmware is recommended.
+  expect : "No[\\s]+changes[\\s]+detected[\\s]+in[\\s]+primary[\\s]+hashes"
+ Notes:
+  description : "2.11 Ensure EFI version is valid and being regularly checked - integrity-check"
+</Custom item>
+
+<Custom item>
+ see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "In order to mitigate firmware attacks Apple has created a automated Firmware check to ensure that the EFI version running is a known good version from Apple. There is also an automated process to check it every seven days.
+  reference : "800-53|SI-7(9),CN-L3|8.1.2.3,CN-L3|8.1.4.6,CSCv7|2.2,CSF|PR.DS-6,LEVEL|1S,QCSC-v1|3.2"
+  cmd : "/bin/launchctl list | /usr/bin/grep com.apple.driver.eficheck"
+ Rationale:If the Firmware of a computer has been compromised the Operating System that the Firmware loads cannot be trusted either."
+ https://www.apple.com/mideast/mac/docs/Apple_T2_Security_Chip_Overview.pdf"
+ type : CMD_EXEC
+  solution : "If EFI does not pass the integrity check you may send a report to Apple. Backing up files and clean installing a known good Operating System and Firmware is recommended.
+  expect : "com.apple.driver.eficheck"
+ Notes:
+  description : "2.11 Ensure EFI version is valid and being regularly checked - daemon"
+</Custom item>
+
+<Custom item>
+Perform the following to implement the prescribed state for Power Nap:
+ Impact:Management programs like Apple Remote Desktop Administrator use wake-on-LAN to connect with computers. If turned off, such management programs will not be able to wake a computer over the LAN. If the wake-on-LAN feature is needed, do not turn off this feature.Power Nap exists for unattended user application updates like email and social media clients. if the computer must always be updated with the latest client information it can be left on, plugged in and the display dimmed. If AC power is not available the use case correlates with possibly compromised physical and logical security. The user should be able to decrypt FileVault and have the applications download what is required when the computer is actively used.The control to prevent computer sleep has been retired for this version of the Benchmark. Forcing the computer to stay on and use energy in case a management push is needed is contrary to most current management processes. Only keep computers unslept if after hours pushes are required on closed LANs."
+  see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "These two features allow the computer to take action when the user is not present and the computer is in energy saving mode. These tools require FileVault to remain unlocked and able to attempt to reconnect to known networks, including any wireless SSIDs with cached credentials. These macOS features are meant to allow the computer to resume activity as needed regardless of physical security controls.Wake for network access This feature allows other users to be able to access your computer's shared resources, such as shared printers or iTunes playlists, even when your computer is in sleep mode. In a closed network when only authorized devices could wake a computer it could be valuable to wake computers in order to do management push activity. Where mobile workstations and agents exist the device will more likely check in to receive updates when already awake. Mobile devices should not be listening for signals on networks where the managed state is unknown, and where untrusted devices could send wake signals.Power Nap Power Nap allows the system to stay in low power mode, especially while on battery power and periodically connect to previously named networks with stored credentials for user applications to phone home and get updates. This capability requires FileVault to remain unlocked and the use of previously joined networks to be risk accepted based on the SSID without user input
+  reference : "800-171|3.1.10,800-53|AC-11,CN-L3|8.1.4.1(b),CSCv7|9.2,ISO/IEC-27001|A.11.2.8,ITSG-33|AC-11,LEVEL|1S,NIAv2|AM23c,NIAv2|AM23d,PCI-DSSv3.1|2.2.4,PCI-DSSv3.2|2.2.4"
+  cmd : "/usr/bin/pmset -g | /usr/bin/grep womp"
+ Rationale:Disabling this feature mitigates the risk of an attacker remotely waking the system and gaining access."
+ Run the following command in Terminal:sudo pmset -a powernap 0
+ type : CMD_EXEC
+  solution : "Perform the following to implement the prescribed state Wake for network access:
+  expect : "^[\\s]*womp[\\s]*0$"
+  description : "2.12 Disable 'Wake for network access' and 'Power Nap' - womp"
+</Custom item>
+
+<Custom item>
+Perform the following to implement the prescribed state for Power Nap:
+ Impact:Management programs like Apple Remote Desktop Administrator use wake-on-LAN to connect with computers. If turned off, such management programs will not be able to wake a computer over the LAN. If the wake-on-LAN feature is needed, do not turn off this feature.Power Nap exists for unattended user application updates like email and social media clients. if the computer must always be updated with the latest client information it can be left on, plugged in and the display dimmed. If AC power is not available the use case correlates with possibly compromised physical and logical security. The user should be able to decrypt FileVault and have the applications download what is required when the computer is actively used.The control to prevent computer sleep has been retired for this version of the Benchmark. Forcing the computer to stay on and use energy in case a management push is needed is contrary to most current management processes. Only keep computers unslept if after hours pushes are required on closed LANs."
+  see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "These two features allow the computer to take action when the user is not present and the computer is in energy saving mode. These tools require FileVault to remain unlocked and able to attempt to reconnect to known networks, including any wireless SSIDs with cached credentials. These macOS features are meant to allow the computer to resume activity as needed regardless of physical security controls.Wake for network access This feature allows other users to be able to access your computer's shared resources, such as shared printers or iTunes playlists, even when your computer is in sleep mode. In a closed network when only authorized devices could wake a computer it could be valuable to wake computers in order to do management push activity. Where mobile workstations and agents exist the device will more likely check in to receive updates when already awake. Mobile devices should not be listening for signals on networks where the managed state is unknown, and where untrusted devices could send wake signals.Power Nap Power Nap allows the system to stay in low power mode, especially while on battery power and periodically connect to previously named networks with stored credentials for user applications to phone home and get updates. This capability requires FileVault to remain unlocked and the use of previously joined networks to be risk accepted based on the SSID without user input
+  reference : "800-171|3.1.10,800-53|AC-11,CN-L3|8.1.4.1(b),CSCv7|9.2,ISO/IEC-27001|A.11.2.8,ITSG-33|AC-11,LEVEL|1S,NIAv2|AM23c,NIAv2|AM23d"
+  cmd : "/usr/bin/pmset -g | /usr/bin/grep powernap"
+ Rationale:Disabling this feature mitigates the risk of an attacker remotely waking the system and gaining access."
+ Run the following command in Terminal:sudo pmset -a powernap 0
+ type : CMD_EXEC
+  solution : "Perform the following to implement the prescribed state Wake for network access:
+  expect : "^[\\s]*powernap[\\s]*0$"
+  description : "2.12 Disable 'Wake for network access' and 'Power Nap' - powernap"
+</Custom item>
+
+<Custom item>
+ see_also : "https://workbench.cisecurity.org/files/2708"
+  info : "macOS's audit facility, auditd, receives notifications from the kernel when certain system calls, such as open, fork, and exit, are made. These notifications are captured and written to an audit log.
+  reference : "800-171|3.3.1,800-171|3.3.2,800-53|AU-12,CN-L3|7.1.3.3(a),CN-L3|7.1.3.3(b),CN-L3|7.1.3.3(c),CN-L3|8.1.3.5(a),CN-L3|8.1.3.5(b),CN-L3|8.1.4.3(a),CSCv7|6.2,CSF|DE.CM-1,CSF|DE.CM-3,CSF|DE.CM-7,CSF|PR.PT-1,ISO/IEC-27001|A.12.4.1,ITSG-33|AU-12,LEVEL|1S,NESA|T3.6.2,NESA|T3.6.5,NESA|T3.6.6,NIAv2|SM8,QCSC-v1|13.2,QCSC-v1|3.2,QCSC-v1|6.2,QCSC-v1|8.2.1,SWIFT-CSCv1|6.4,TBA-FIISB|45.1.1"
+  cmd : "/bin/launchctl list | /usr/bin/grep -i auditd"
+ Rationale:Logs generated by auditd may be useful when investigating a security incident as they may help reveal the vulnerable application and the actions taken by a malicious actor."
+ Run the following command in Terminal:sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.auditd.plist"
+ type : CMD_EXEC
+  solution : "Perform the following to implement the prescribed state:
+  expect : "com.apple.auditd"
+  description : "3.1 Enable security auditing"
+</Custom item>
+
