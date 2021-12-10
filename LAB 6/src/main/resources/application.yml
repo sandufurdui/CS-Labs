@@ -4,7 +4,7 @@ server:
 spring:
   cloud:
     config:
-      enabled: false
+      enabled: true
   security:
     oauth2:
       client:
